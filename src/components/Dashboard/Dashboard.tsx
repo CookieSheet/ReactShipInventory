@@ -1,5 +1,6 @@
-import React, {useState} from "react";
-import { Drawer as MUIDrawer,
+import React, { useState } from "react";
+import {
+    Drawer as MUIDrawer,
     ListItem,
     List,
     ListItemText,
@@ -10,19 +11,24 @@ import { Drawer as MUIDrawer,
     Divider,
     Button,
     CssBaseline,
-    Box
+    Box,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
 
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { ChevronRight, ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { theme } from '../../Theme/themes';
-import { DataTable } from '../../components'
+import { DataTable, ShipForm } from '../../components';
 
 const drawerWidth = 240;
 
 const myStyles = {
-    appBar : {
+    appBar: {
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen
@@ -35,7 +41,7 @@ const myStyles = {
         transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
-          })
+        })
     },
     menuButton: {
         marginRight: theme.spacing(2)
@@ -58,7 +64,7 @@ const myStyles = {
         // necessary for content below app bar
         ...theme.mixins.toolbar,
         justifyContent: 'flex-end',
-      },
+    },
     content: {
         flexGrow: 1,
         padding: theme.spacing(3),
@@ -67,7 +73,7 @@ const myStyles = {
             duration: theme.transitions.duration.leavingScreen
         }),
         marginLeft: 0,
-        marginTop: theme.spacing(8)
+        marginTop: theme.spacing(4)
     },
     contentShift: {
         transition: theme.transitions.create('margin', {
@@ -75,94 +81,114 @@ const myStyles = {
             duration: theme.transitions.duration.enteringScreen,
         }),
         marginLeft: 0,
-        },
+    },
     toolbar: {
-        display:'flex',
-
+        display: 'flex'
     },
     toolbarButton: {
-        marginLeft: 50,
+        marginLeft: "auto",
         backgroundColor: theme.palette.primary.contrastText,
         "&:hover": {
-            color : "white",
-            backgroundColor: theme.palette.primary.light 
+            color: "white",
+            backgroundColor: theme.palette.primary.light
         }
     }
 
 }
- 
+
 export const Dashboard = () => {
     const navigate = useNavigate();
-    const[open, setOpen] = useState(false);
-    
+    const [open, setOpen] = useState(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
+
     const handleDrawerOpen = () => {
         setOpen(true);
-      };
-      
-      const handleDrawerClose = () => {
+    };
+
+    const handleDrawerClose = () => {
         setOpen(false);
-      };
-      
-      const itemsList = [
+    };
+    const handleDialogOpen = () => {
+        setDialogOpen(true);
+    }
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+    }
+
+    const itemsList = [
         {
-          text: 'Home',
-          onClick: () => navigate('/')
+            text: 'Home',
+            onClick: () => navigate('/')
         },
         {
-          text: 'Sign In',
-          onClick: () => navigate('/signin')
+            text: 'Sign In',
+            onClick: () => navigate('/signin')
         }
-      ]
-      return (
-        <Box sx={{display:'flex'}} >
-          <CssBaseline />
-          <AppBar
-            sx={open ? myStyles.appBarShift : myStyles.appBar } 
-            position="fixed"
-          >
-            <Toolbar sx={myStyles.toolbar}>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
-                sx={ open ? myStyles.hide : myStyles.menuButton }
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" noWrap> Dashboard</Typography>
-              <Button sx={ myStyles.toolbarButton }>Create New Ship</Button>
+    ]
+    return (
+        <Box sx={{ display: 'flex' }} >
+            <CssBaseline />
+            <AppBar
+                sx={open ? myStyles.appBarShift : myStyles.appBar}
+                position="fixed">
+                <Toolbar sx={myStyles.toolbar}>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={handleDrawerOpen}
+                        edge="start"
+                        sx={open ? myStyles.hide : myStyles.menuButton}>
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6" noWrap> Dashboard</Typography>
+                    <Button sx={myStyles.toolbarButton} onClick={handleDialogOpen}>Create New Ship</Button>
+                    {/* Dialog Popup HTML */}
+                    <Dialog open={dialogOpen} onClose={handleDialogClose} aria-labelledby = "form-dialog-title">
+                    <DialogTitle id="form-dialog-title">Add New Ship</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText> Fill the entire form to build out a ship.</DialogContentText>
+                        <ShipForm />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDialogClose} color='warning'>Cancel</Button> 
+                </DialogActions>
+                </Dialog>
+
             </Toolbar>
-          </AppBar>
-          <MUIDrawer
-            sx={open ? myStyles.drawer : myStyles.hide}
-            variant="persistent"
-            anchor="left"
-            open={open}
-            style={{width:drawerWidth}}
-          >
-            <Box
-              sx={myStyles.drawerHeader}>
-                <IconButton onClick={handleDrawerClose}>
-                  {theme.direction === 'ltr' ? <ChevronLeft /> : <ChevronRight />}
-                </IconButton>
-            </Box>
-            <Divider />
-            <List>
-            {itemsList.map((item, index) => {
-              const { text, onClick } = item;
-              return (
-                <ListItem button key={text} onClick={onClick}>
-                  <ListItemText primary={text} />
-                </ListItem>
-              );
-            })}
-            </List>
-          </MUIDrawer>
-          <Box sx={ myStyles.content } >
+            </AppBar>
+            <MUIDrawer
+                sx={open ? myStyles.drawer : myStyles.hide}
+                variant="persistent"
+                anchor="left"
+                open={open}
+                style={{ width: drawerWidth }}
+            >
+                <Box
+                    sx={myStyles.drawerHeader}>
+                    <IconButton onClick={handleDrawerClose}>
+                        {theme.direction === 'ltr' ? <ChevronLeft /> : <ChevronRight />}
+                    </IconButton>
+                </Box>
+                <Divider />
+                <List>
+                    {itemsList.map((item, index) => {
+                        const { text, onClick } = item;
+                        return (
+                            <ListItem button key={text} onClick={onClick}>
+                                <ListItemText primary={text} />
+                            </ListItem>
+                        );
+                    })}
+                </List>
+            </MUIDrawer>
+            <Box sx={ myStyles.content } >
+                <Box sx={ myStyles.drawerHeader }/>
+  
+            <h1>Ship Database</h1>
             <DataTable />
-           
-          </Box>
+
+            </Box>
         </Box>
-        )
-    };
+    )
+};
+
